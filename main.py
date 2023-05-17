@@ -37,7 +37,9 @@ warnings.filterwarnings('ignore')
 
 
 def parse_option():
+    # 创建了一个ArgumentParser对象，该对象定义了应该如何解析命令行参数。
     parser = argparse.ArgumentParser()
+    # 用add_argument（）方法添加几个参数，指定它们的名称、类型、帮助消息、默认值等。
     parser.add_argument('--cfg', type=str, required=True, metavar="FILE", help='path to config file', )
     parser.add_argument(
         "--opts",
@@ -49,16 +51,18 @@ def parse_option():
     parser.add_argument('--data-path', type=str, help='path to dataset')
     parser.add_argument('--resume', help='resume from checkpoint')
     parser.add_argument('--amp', action='store_true', default=False)
-    parser.add_argument('--output', default='output', type=str, metavar='PATH',
+    parser.add_argument('--output', default='/kaggle/working', type=str, metavar='PATH',
                         help='root of output folder, the full path is <output>/<model_name>/<tag> (default: output)')
-    parser.add_argument('--tag', help='tag of experiment')
+    parser.add_argument('--tag', default=0,help='tag of experiment')
     parser.add_argument('--eval', action='store_true', help='Perform evaluation only')
-    parser.add_argument('--pretrained', type=str, help='Finetune 384 initial checkpoint.', default='')
-
+    parser.add_argument('--pretrained', type=str, help='Finetune 384 initial checkpoint.', default='/kaggle/input/dat-base-in1k-384/dat_base_in1k_224.pth')
+    
+    # 该方法从命令行解析参数并返回两个值：args和unparsed
+    # unparsed是语法分析器无法识别的所有参数的列表。
     args, unparsed = parser.parse_known_args()
 
     config = get_config(args)
-
+    # args是一个包含已解析参数值的对象。可以使用属性语法访问这些值。例如，args.cfg将返回--cfg参数的值。
     return args, config
 
 
