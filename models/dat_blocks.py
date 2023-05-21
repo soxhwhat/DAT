@@ -317,14 +317,14 @@ class TransformerMLP(nn.Module):
         return x
 
 class LayerNormProxy(nn.Module):
-    
+    # 在 __init__ 方法中，该模块接受一个名为 dim 的参数，用于指定需要进行归一化的特征的维数。
     def __init__(self, dim):
         
         super().__init__()
         self.norm = nn.LayerNorm(dim)
 
     def forward(self, x):
-
+        # 这个代码的作用是在给定的张量 x 上运用 Layer Normalization，并返回处理后的张量。
         x = einops.rearrange(x, 'b c h w -> b h w c')
         x = self.norm(x)
         return einops.rearrange(x, 'b h w c -> b c h w')

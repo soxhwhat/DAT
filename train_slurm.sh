@@ -12,4 +12,4 @@ srun -p RTX3090 \
     --ntasks-per-node=${GPUS_PER_NODE} \
     --cpus-per-task=${CPUS_PER_TASK} \
     --kill-on-bad-exit=1 \
-    python -u slurm_main.py --cfg="configs/${CFG}.yaml" --data-path="/home/data/ImageNet" --amp --tag="${CFG}"
+    python -u slurm_main.py --cfg="configs/${CFG}.yaml" --data-path="../input/chest-xray-pneumonia/chest_xray/chest_xray" --amp --tag="${CFG}"

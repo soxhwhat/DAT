@@ -31,6 +31,7 @@ from logger import create_logger
 from utils import load_checkpoint, save_checkpoint, get_grad_norm, auto_resume_helper, reduce_tensor, load_pretrained, init_dist_slurm
 
 from torch.cuda.amp import GradScaler, autocast
+from torchsummary import summary
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -49,11 +50,11 @@ def parse_option():
     parser.add_argument('--data-path', type=str, help='path to dataset')
     parser.add_argument('--resume', help='resume from checkpoint')
     parser.add_argument('--amp', action='store_true', default=False)
-    parser.add_argument('--output', default='output', type=str, metavar='PATH',
+    parser.add_argument('--output', default='/kaggle/working', type=str, metavar='PATH',
                         help='root of output folder, the full path is <output>/<model_name>/<tag> (default: output)')
     parser.add_argument('--tag', help='tag of experiment')
     parser.add_argument('--eval', action='store_true', help='Perform evaluation only')
-    parser.add_argument('--pretrained', type=str, help='Finetune 384 initial checkpoint.', default='')
+    parser.add_argument('--pretrained', type=str, help='Finetune 384 initial checkpoint.', default='/kaggle/input/dat-base-in1k-384/dat_base_in1k_224.pth')
 
     args, unparsed = parser.parse_known_args()
 
@@ -103,6 +104,8 @@ def main():
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
     model = build_model(config)
     model.cuda()
+    images = next(iter(data_loader_train))[0]
+    summary(model.cuda(), (images.shape[1], images.shape[2], images.shape[3]))
     logger.info(str(model))
 
     optimizer = build_optimizer(config, model)

@@ -21,6 +21,7 @@ import torch.distributed as dist
 
 from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 from timm.utils import accuracy, AverageMeter
+from torchsummary import summary
 
 from config import get_config
 from models import build_model
@@ -110,6 +111,8 @@ def main():
     logger.info(f"Creating model:{config.MODEL.TYPE}/{config.MODEL.NAME}")
     model = build_model(config)
     model.cuda()
+    images = next(iter(data_loader_train))[0]
+    summary(model.cuda(), (images.shape[1], images.shape[2], images.shape[3]))
     logger.info(str(model))
 
     optimizer = build_optimizer(config, model)

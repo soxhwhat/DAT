@@ -26,9 +26,10 @@ _C.DATA.BATCH_SIZE = 128
 # Path to dataset, could be overwritten by command line argument
 _C.DATA.DATA_PATH = ''
 # Dataset name
-_C.DATA.DATASET = 'imagenet'
+_C.DATA.DATASET = 'covid19'
 # Input image size
 _C.DATA.IMG_SIZE = 224
+# 这个代码行是在设置数据预处理过程中的插值方法，用于调整图片大小。bicubic是其中一种常见的插值方法，它可以产生较平滑的输出图像，但计算成本较高。另外两种可选的插值方法是random和bilinear。random表示每次随机选择一种插值方法，bilinear则是一种速度较快但输出质量不如bicubic的插值方法。
 # Interpolation to resize image (random, bilinear, bicubic)
 _C.DATA.INTERPOLATION = 'bicubic'
 # Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.
@@ -47,7 +48,7 @@ _C.MODEL.NAME = 'dat_tiny'
 # Checkpoint to resume, could be overwritten by command line argument
 _C.MODEL.RESUME = ''
 # Number of classes, overwritten in data preparation
-_C.MODEL.NUM_CLASSES = 1000
+_C.MODEL.NUM_CLASSES = 2
 # Label Smoothing
 _C.MODEL.LABEL_SMOOTHING = 0.1
 
@@ -156,7 +157,7 @@ def _update_config_from_file(config, cfg_file):
     config.merge_from_file(cfg_file)
     config.freeze()
 
-
+# 它根据args中传递的命令行参数更新配置对象。配置对象通常是一个结构化数据对象，它保存程序的各种参数和选项。
 def update_config(config, args):
     _update_config_from_file(config, args.cfg)
 

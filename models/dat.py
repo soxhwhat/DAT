@@ -27,6 +27,10 @@ class TransformerStage(nn.Module):
                  attn_drop, proj_drop, expansion, drop, drop_path_rate, use_dwc_mlp):
 
         super().__init__()
+        # 将变量fmapsize转换为一个二元组(tuple)
+        # 2 - tuple是指包含两个元素的元组，也称为二元组或pair（对）。在编程中，元组是一种数据结构，可以容纳不同类型的值。
+        # 2 - tuple可以用于表达有序的一对值，例如(x, y)用于表示二维平面上的某个点的坐标。它还可以用于存储数据对，如关键字对(key, value)，这在字典数据结构中很常见。
+        # 在Python中，使用小括号()来表示元组，例如(1, 2)就是一个2 - tuple。元组通常是不可变的，即它们的值不可以修改，但是其中的元素可以是任意类型的，包括数字、字符串、列表等。
         fmap_size = to_2tuple(fmap_size)
         self.depths = depths
         hc = dim_embed // heads
@@ -34,6 +38,7 @@ class TransformerStage(nn.Module):
         self.proj = nn.Conv2d(dim_in, dim_embed, 1, 1, 0) if dim_in != dim_embed else nn.Identity()
 
         self.layer_norms = nn.ModuleList(
+            # 使用for循环了2*depths次，每次都会执行nn.LayerNorm(dim_embed)，添加到列表中
             [LayerNormProxy(dim_embed) for _ in range(2 * depths)]
         )
         self.mlps = nn.ModuleList(
@@ -107,6 +112,9 @@ class DAT(nn.Module):
                  **kwargs):
         super().__init__()
 
+        # 这段代码定义了一个 patch_proj 层，用于将输入的图片分解为多个块（也称为 patch）进行处理。
+        # 如果 use_conv_patches 为 True，表示使用卷积方式提取块特征，则使用 nn.Conv2d 在输入图片上提取大小为 7x7 的块，步长为 patch_size，padding 为 3，将其转换为大小为 dim_stem 的向量，并归一化输出向量，这个过程等价于一个大小为 7 的卷积核在图片上滑动提取块特征。
+        # 如果 use_conv_patches 为 False，则使用 nn.Conv2d 在输入图片上提取大小为 patch_size 的块，并使用 LayerNormProxy 归一化输出向量，同样转换为大小为 dim_stem 的向量。
         self.patch_proj = nn.Sequential(
             nn.Conv2d(3, dim_stem, 7, patch_size, 3),
             LayerNormProxy(dim_stem)
@@ -116,8 +124,10 @@ class DAT(nn.Module):
         ) 
 
         img_size = img_size // patch_size
+        # 这行代码建立一个列表（dpr）用于保存每个Residual Block中的Drop-path rate。其中，droppathrate是根据超参数p和当前层的深度计算得到的，depths是一个整数列表，每个元素表示当前stage中的每个block的深度。
+        # 因此，这一行代码返回一个droppathrate列表，列表中的每个元素代表一个Residual Block中drop-path所使用的概率，每个元素的值等间隔并且范围在0到droppathrate。
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, sum(depths))]
-        
+        # 这行代码将创建一个空的 nn.ModuleList() 对象，并将其分配给类对象的 "stages" 实例变量。nn.ModuleList() 是一个 PyTorch 内置模块，可以将子模块存储在列表中，便于管理和访问。在这个代码中，可能会在后面的代码中向 "stages" 列表中添加子模块。
         self.stages = nn.ModuleList()
         for i in range(4):
             dim1 = dim_stem if i == 0 else dims[i - 1] * 2

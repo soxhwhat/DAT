@@ -67,14 +67,16 @@ def build_loader(config):
 
 def build_dataset(is_train, config):
     transform = build_transform(is_train, config)
+    prefix = 'train' if is_train else 'val'
+    data_dir = "../input/chest-xray-pneumonia/chest_xray/chest_xray"
+    root = os.path.join(data_dir, prefix)
     if config.DATA.DATASET == 'imagenet':
-        prefix = 'train' if is_train else 'val'
-        root = os.path.join(config.DATA.DATA_PATH, prefix)
         dataset = datasets.ImageFolder(root, transform=transform)
         nb_classes = 1000
     else:
-        raise NotImplementedError("We only support ImageNet Now.")
-
+        # TODO: add your own dataset loader
+        dataset = datasets.ImageFolder(root, transform=transform)
+        nb_classes = 2
     return dataset, nb_classes
 
 
